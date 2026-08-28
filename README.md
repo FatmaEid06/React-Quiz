@@ -1,70 +1,178 @@
-# Getting Started with Create React App
+# ⚛️ The React Quiz
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## 📖 Overview
 
-## Available Scripts
+**The React Quiz** is a web application designed to test developers' mastery of core React concepts. Built to showcase modern React development patterns, it replaces fragmented `useState` calls with a centralized, predictable state machine powered by the **`useReducer`** hook.
 
-In the project directory, you can run:
+The application fetches questions asynchronously from a mock REST API backend (`json-server`), tracks live progress and scores, enforces per-quiz countdown timers, and retains session highscores across retries.
 
-### `npm start`
+---
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## ✨ Key Features
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+- ⚡ **Centralized State Machine**: Complete application lifecycle (`loading`, `error`, `ready`, `active`, `finished`) managed cleanly through React's `useReducer`.
+- 🌐 **Async REST API Integration**: Dynamic question loading from a local `json-server` backend with loading spinners and robust error boundary UI.
+- ⏱️ **Real-Time Countdown Timer**: Dynamically calculated time limit (30 seconds per question) with automatic quiz submission when the clock reaches zero.
+- 🎯 **Instant Feedback & Smart Scoring**:
+  - Color-coded option highlighting for correct and incorrect answers upon selection.
+  - Options lock immediately after an answer is chosen to prevent score manipulation.
+  - Dynamic points weighting per question (10, 20, or 30 points).
+- 📊 **Live Progress & Point Accumulation**: Real-time progress bar reflecting current question index, question count, and live score.
+- 🏆 **Highscore Tracking**: Tracks and displays the player's peak performance score across multiple quiz attempts in the current session.
+- 🔄 **Smooth Reset Capability**: Allows users to restart the quiz instantly without re-fetching questions from the server.
+- 🎨 **Modern Dark-Mode UI**: Styled with clean CSS custom properties, responsive flexbox/grid layouts, and Codystar typography.
+- 🛠️ **Bonus Reducer Playground**: Includes a standalone `DateCounter` component demonstrating reducer patterns with step sliders and date arithmetic.
 
-### `npm test`
+---
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Application State Machine Flowchart
 
-### `npm run build`
+The following state machine diagram illustrates the transitions between different quiz stages and the dispatched actions that trigger them:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```mermaid
+stateDiagram-v2
+    [*] --> Loading: Mount App (Fetch Questions)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+    Loading --> Error: API Fetch Failed (dataFailed)
+    Loading --> Ready: Questions Loaded (dataRecived)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+    Error --> [*]
 
-### `npm run eject`
+    Ready --> Active: User Clicks "Let's start" (start)
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+    state Active {
+        [*] --> DisplayQuestion
+        DisplayQuestion --> OptionSelected: Select Answer (newAnswer)
+        OptionSelected --> DisplayQuestion: Next Button Clicked (nextQuestion)
+        OptionSelected --> QuizEnded: Last Question Answered (finish)
+        DisplayQuestion --> QuizEnded: Timer Reaches 0:00 (tick)
+        OptionSelected --> QuizEnded: Timer Reaches 0:00 (tick)
+    }
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+    Active --> Finished: Quiz Complete / Time Expired (finish / tick)
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+    Finished --> Ready: User Clicks "Restart quiz" (restart)
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## 🧠 State Management & Reducer Logic
 
-## Learn More
+The application state is centralized in `App.js` using `useReducer`.
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Initial State Structure
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```javascript
+const initialState = {
+  questions: [], // Array of question objects fetched from the API
+  status: "loading", // 'loading' | 'error' | 'ready' | 'active' | 'finished'
+  index: 0, // Index of the active question
+  answer: null, // User's selected option index for current question
+  points: 0, // Current score accumulated by the user
+  highscore: 0, // Highest score achieved during the session
+  secondsRemaining: null, // Total seconds left before quiz auto-finishes
+};
+```
 
-### Code Splitting
+### Dispatched Action Types
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+| Action Type    | Payload           | State Transformation                                                                    |
+| :------------- | :---------------- | :-------------------------------------------------------------------------------------- |
+| `dataRecived`  | `Array<Question>` | Stores fetched questions, transitions `status` to `'ready'`                             |
+| `dataFailed`   | _None_            | Sets `status` to `'error'`                                                              |
+| `start`        | _None_            | Sets `status` to `'active'`, initializes `secondsRemaining = questions.length * 30`     |
+| `newAnswer`    | `number` (index)  | Records selected answer; adds question points if answer matches `correctOption`         |
+| `nextQuestion` | _None_            | Increments `index` by 1, resets `answer` to `null`                                      |
+| `finish`       | _None_            | Sets `status` to `'finished'`, updates `highscore` if current points exceed it          |
+| `restart`      | _None_            | Resets quiz state back to `'ready'` while preserving loaded `questions` and `highscore` |
+| `tick`         | _None_            | Decrements `secondsRemaining` by 1; auto-transitions `status` to `'finished'` at 0      |
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### File Structure
 
-### Making a Progressive Web App
+A quick overview of the key components and files:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+````text
+.
+├── public/
+│   └── logo512.png
+├── src/
+│   ├── components/
+│   │   ├── Error.js
+│   │   ├── FinishScreen.js
+│   │   ├── Header.js
+│   │   ├── Loader.js
+│   │   ├── Main.js
+│   │   ├── Progress.js
+│   │   ├── Question.js
+│   │   ├── StartScreen.js
+│   │   └── Timer.js
+│   ├── App.js
+│   ├── index.css
+│   └── index.js
+├── package.json
+└── README.md
+---
 
-### Advanced Configuration
+## 🚀 Getting Started
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### Prerequisites
 
-### Deployment
+Ensure you have the following installed on your machine:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+- **Node.js** (`v16.x` or higher recommended) - [Download Node.js](https://nodejs.org/)
+- **npm** (comes bundled with Node.js) or **yarn** / **pnpm**
 
-### `npm run build` fails to minify
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### Installation
+
+1. **Clone the repository:**
+
+   ```bash
+   git clone https://github.com/FatmaEid06/React-Quiz.git
+   cd React-Quiz
+````
+
+2. **Install project dependencies:**
+   ```bash
+   npm install
+   ```
+
+---
+
+### Running the Application
+
+This project requires **two processes** running simultaneously:
+
+1. The **JSON Server** mock backend API on port `9000`
+2. The **React development server** on port `3000`
+
+#### Step 1: Start the Mock API Server
+
+In your first terminal window, run:
+
+```bash
+npm run server
+```
+
+> The API will be available at: `http://localhost:9000/questions`
+
+#### Step 2: Start the React Frontend App
+
+In a second terminal window, run:
+
+```bash
+npm start
+```
+
+> The application will automatically open in your browser at: `http://localhost:3000`
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+<div align="center">
+  <sub>Built with ❤️ for React developers and learners worldwide.</sub>
+</div>
