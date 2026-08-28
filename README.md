@@ -87,11 +87,42 @@ const initialState = {
 
 ---
 
+### Getting Started
+
+To run this project locally, you'll need Node.js and npm installed.
+
+#### Prerequisites
+
+- Node.js (LTS version recommended)
+- npm (or yarn)
+
+#### Installation
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/seif-a096/react-quiz
+    ```
+2.  **Navigate to the project directory:**
+    ```bash
+    cd your-repo-name
+    ```
+3.  **Install the dependencies:**
+    ```bash
+    npm install
+    ```
+4.  **Run the application:**
+    ```bash
+    npm start
+    ```
+    The app will open in your default browser at `http://localhost:3000`.
+
+---
+
 ### File Structure
 
 A quick overview of the key components and files:
 
-````text
+```text
 .
 ├── public/
 │   └── logo512.png
@@ -112,53 +143,3 @@ A quick overview of the key components and files:
 ├── package.json
 └── README.md
 ```
-
-
----
-## 🚀 Getting Started
-### Prerequisites
-Ensure you have the following installed on your machine:
-- **Node.js** (`v16.x` or higher recommended) - [Download Node.js](https://nodejs.org/)
-- **npm** (comes bundled with Node.js) or **yarn** / **pnpm**
----
-### Installation
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/FatmaEid06/React-Quiz.git
-   cd React-Quiz
-   ```
-2. **Install project dependencies:**
-   ```bash
-   npm install
-   ```
----
-### Running the Application
-
-This project requires **two processes** running simultaneously:
-
-1. The **JSON Server** mock backend API on port `9000`
-2. The **React development server** on port `3000`
-
-#### Step 1: Start the Mock API Server
-
-In your first terminal window, run:
-
-```bash
-npm run server
-```
-
-> The API will be available at: `http://localhost:9000/questions`
-
-#### Step 2: Start the React Frontend App
-
-In a second terminal window, run:
-
-```bash
-npm start
-```
-
-> The application will automatically open in your browser at: `http://localhost:3000`
-
----
-
-
