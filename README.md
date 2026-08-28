@@ -111,33 +111,18 @@ A quick overview of the key components and files:
 │   └── index.js
 ├── package.json
 └── README.md
+```
 ---
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-Ensure you have the following installed on your machine:
-
-- **Node.js** (`v16.x` or higher recommended) - [Download Node.js](https://nodejs.org/)
-- **npm** (comes bundled with Node.js) or **yarn** / **pnpm**
-
----
-
 ### Installation
-
 1. **Clone the repository:**
-
    ```bash
    git clone https://github.com/FatmaEid06/React-Quiz.git
    cd React-Quiz
-````
-
+   ```
 2. **Install project dependencies:**
    ```bash
    npm install
    ```
-
 ---
 
 ### Running the Application
@@ -169,10 +154,4 @@ npm start
 
 ---
 
-## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-<div align="center">
-  <sub>Built with ❤️ for React developers and learners worldwide.</sub>
-</div>
