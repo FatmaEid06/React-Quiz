@@ -112,6 +112,14 @@ A quick overview of the key components and files:
 ├── package.json
 └── README.md
 ```
+
+
+---
+## 🚀 Getting Started
+### Prerequisites
+Ensure you have the following installed on your machine:
+- **Node.js** (`v16.x` or higher recommended) - [Download Node.js](https://nodejs.org/)
+- **npm** (comes bundled with Node.js) or **yarn** / **pnpm**
 ---
 ### Installation
 1. **Clone the repository:**
@@ -124,7 +132,6 @@ A quick overview of the key components and files:
    npm install
    ```
 ---
-
 ### Running the Application
 
 This project requires **two processes** running simultaneously:
